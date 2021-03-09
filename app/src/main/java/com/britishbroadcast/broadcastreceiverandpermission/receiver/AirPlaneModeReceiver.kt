@@ -8,7 +8,13 @@ import android.widget.Toast
 import com.britishbroadcast.broadcastreceiverandpermission.util.Logger.Companion.logDebug
 import com.britishbroadcast.broadcastreceiverandpermission.util.Logger.Companion.logError
 
-class AirPlaneModeReceiver: BroadcastReceiver(){
+class AirPlaneModeReceiver(val airplaneDelegate: AirplaneDelegate): BroadcastReceiver(){
+
+
+    interface AirplaneDelegate{
+        fun showButton()
+        fun hideButton()
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -22,6 +28,11 @@ class AirPlaneModeReceiver: BroadcastReceiver(){
 
             val message = if(on) "Airplane mode is on" else "Airplane mode is off."
             logDebug(message)
+
+            if(!on)
+                airplaneDelegate.showButton()
+            else
+                airplaneDelegate.hideButton()
 
         } else {
             logError("Not Airplane mode.")

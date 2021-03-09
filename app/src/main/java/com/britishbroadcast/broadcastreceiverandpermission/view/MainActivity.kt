@@ -8,6 +8,8 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.britishbroadcast.broadcastreceiverandpermission.R
@@ -15,10 +17,11 @@ import com.britishbroadcast.broadcastreceiverandpermission.WeatherCondition
 import com.britishbroadcast.broadcastreceiverandpermission.receiver.AirPlaneModeReceiver
 import com.britishbroadcast.broadcastreceiverandpermission.util.Logger.Companion.logDebug
 import com.britishbroadcast.broadcastreceiverandpermission.util.Weather
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AirPlaneModeReceiver.AirplaneDelegate {
 
-    private val airReceiver = AirPlaneModeReceiver()
+    private val airReceiver = AirPlaneModeReceiver(this)
 
     private val CUSTOM_FILTER = "106.8"
 
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity() {
             //2nd Step: If permission is denied, request permissions
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 707)
         }
+
+
+        airplane_settings_button.setOnClickListener {
+            startActivity(Intent(ACTION_AIRPLANE_MODE_SETTINGS))
+        }
     }
 
     //3rd Step: Override OnRequestPermissionResult -> activity
@@ -78,6 +86,14 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         unregisterReceiver(airReceiver)
         unregisterReceiver(customReceiver)
+    }
+
+    override fun showButton() {
+        airplane_settings_button.visibility = View.VISIBLE
+    }
+
+    override fun hideButton() {
+        airplane_settings_button.visibility = View.GONE
     }
 
 }
